@@ -324,11 +324,11 @@ def main():
 
         if mlflow is not None:
             mlflow.log_artifact(str(final_dir / "test_metrics.json"))
-            # MLflow's traced pt2 format is not used by our checkpoint-based exporters.
+            # Keep the checkpoint in the pickle format expected by the current MLflow PyTorch flavor.
             mlflow.pytorch.log_model(
                 model,
                 "model",
-                serialization_format="cloudpickle",
+                serialization_format="pickle",
                 registered_model_name=cfg["mlflow"]["registered_model_name"],
             )
 
