@@ -38,7 +38,7 @@ calibration:
   fit_on: val
 
 mlflow:
-  tracking_uri: mlflow/mlruns
+  tracking_uri: sqlite:///mlflow/mlflow.db
   experiment_name: codesentinel-vuln-classifier
   registered_model_name: codesentinel-vuln-classifier
 
