@@ -90,7 +90,7 @@ calibration:
   method: temperature_scaling
   fit_on: val
 mlflow:
-  tracking_uri: {tmp_path / "mlruns"}
+  tracking_uri: sqlite:///{tmp_path / "mlflow.db"}
   experiment_name: smoke-test
   registered_model_name: smoke-test-model
 output:
