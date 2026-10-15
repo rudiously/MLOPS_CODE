@@ -1,0 +1,3 @@
+Generated evaluation_report.md, confusion_matrix.png, roc_curve.png,
+pr_curve.png, and calibration_plot.png land here after running
+evaluation/generate_report.py.

@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codesentinel-model"
+version = "0.1.0"
+description = "CodeSentinel inference package: predict() for vulnerability/quality scoring, handed off to the serving layer."
+requires-python = ">=3.10"
+dependencies = [
+    "onnxruntime>=1.16",
+    "transformers>=4.35",
+    "numpy>=1.24",
+]
+
+[tool.setuptools.packages.find]
+include = ["codesentinel_model*"]
+
+[tool.setuptools.package-data]
+codesentinel_model = ["output_schema.json", "artifacts/*", "artifacts/**/*"]

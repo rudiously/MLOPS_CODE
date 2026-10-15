@@ -1,0 +1,11 @@
+{
+  "model_version": "cpu-tfidf-baseline-0.1",
+  "model_type": "TF-IDF word/character features + balanced logistic regression",
+  "training_rows": 27228,
+  "repositories": [
+    "FFmpeg",
+    "qemu"
+  ],
+  "evaluation_report": "reports/cpu_baseline_report.md",
+  "warning": "Research baseline only. Weak two-repository held-out metrics; not for serving, security decisions, or merge blocking."
+}

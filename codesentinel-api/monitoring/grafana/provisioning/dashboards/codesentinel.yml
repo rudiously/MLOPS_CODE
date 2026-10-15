@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: CodeSentinel
+    orgId: 1
+    folder: CodeSentinel
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

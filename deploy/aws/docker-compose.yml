@@ -1,0 +1,76 @@
+services:
+  api:
+    image: ${ECR_REGISTRY:?set ECR_REGISTRY}/codesentinel-api:${IMAGE_TAG:-latest}
+    env_file: ../../.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://codesentinel:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/codesentinel
+      MODEL_SERVER_URL: http://model-server:8001
+      REQUIRE_DASHBOARD_AUTH: "true"
+    expose: ["8000"]
+    depends_on:
+      db:
+        condition: service_healthy
+      model-server:
+        condition: service_healthy
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    restart: unless-stopped
+
+  model-server:
+    image: ${ECR_REGISTRY:?set ECR_REGISTRY}/codesentinel-model:${IMAGE_TAG:-latest}
+    expose: ["8001"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: codesentinel
+      POSTGRES_USER: codesentinel
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codesentinel -d codesentinel"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  frontend:
+    image: ${ECR_REGISTRY:?set ECR_REGISTRY}/codesentinel-frontend:${IMAGE_TAG:-latest}
+    ports: ["80:80"]
+    depends_on: [api]
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus"]
+    ports: ["127.0.0.1:9090:9090"]
+    volumes:
+      - ../../codesentinel-api/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on: [api, model-server]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3001:3000"]
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in the SSM parameter}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ../../codesentinel-api/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../../codesentinel-api/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:

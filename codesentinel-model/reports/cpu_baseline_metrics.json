@@ -1,0 +1,66 @@
+{
+  "folds": [
+    {
+      "held_out_repo": "FFmpeg",
+      "train_rows": 17521,
+      "test_rows": 9707,
+      "train_label_counts": {
+        "1": 7461,
+        "0": 10060
+      },
+      "test_label_counts": {
+        "0": 4759,
+        "1": 4948
+      },
+      "precision": 0.549630007655014,
+      "recall": 0.43532740501212613,
+      "f1": 0.4858463967520018,
+      "roc_auc": 0.5441557951805736,
+      "confusion_matrix_labels_0_1": [
+        [
+          2994,
+          1765
+        ],
+        [
+          2794,
+          2154
+        ]
+      ],
+      "fit_and_predict_seconds": 31.06
+    },
+    {
+      "held_out_repo": "qemu",
+      "train_rows": 9707,
+      "test_rows": 17521,
+      "train_label_counts": {
+        "0": 4759,
+        "1": 4948
+      },
+      "test_label_counts": {
+        "1": 7461,
+        "0": 10060
+      },
+      "precision": 0.45304271503803395,
+      "recall": 0.41509181074922935,
+      "f1": 0.4332377421836749,
+      "roc_auc": 0.5260196161191276,
+      "confusion_matrix_labels_0_1": [
+        [
+          6321,
+          3739
+        ],
+        [
+          4364,
+          3097
+        ]
+      ],
+      "fit_and_predict_seconds": 30.42
+    }
+  ],
+  "macro_average": {
+    "precision": 0.501336361346524,
+    "recall": 0.42520960788067774,
+    "f1": 0.4595420694678384,
+    "roc_auc": 0.5350877056498506
+  }
+}

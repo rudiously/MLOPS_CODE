@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CodeSentinelPredictionOutput",
+  "type": "object",
+  "required": ["is_vulnerable", "confidence", "severity", "predicted_cwe", "line_attributions", "model_version"],
+  "properties": {
+    "is_vulnerable": { "type": "boolean" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "severity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "predicted_cwe": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cwe_id", "score"],
+        "properties": {
+          "cwe_id": { "type": "string" },
+          "score": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "line_attributions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["line", "score", "snippet"],
+        "properties": {
+          "line": { "type": "integer", "minimum": 1 },
+          "score": { "type": "number" },
+          "snippet": { "type": "string" }
+        }
+      }
+    },
+    "model_version": { "type": "string" }
+  }
+}

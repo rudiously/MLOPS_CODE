@@ -1,0 +1,32 @@
+# Local environment and secrets
+.env
+**/.env
+!.env.example
+**/.venv/
+**/venv/
+
+# Python build/runtime output
+__pycache__/
+**/__pycache__/
+*.py[cod]
+**/.pytest_cache/
+**/*.egg-info/
+
+# Frontend dependencies and builds
+**/node_modules/
+**/dist/
+
+# Local databases and logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Downloaded and generated training datasets
+codesentinel-model/data/raw/
+codesentinel-model/data/processed/
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/

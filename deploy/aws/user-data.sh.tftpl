@@ -1,0 +1,31 @@
+#!/bin/bash
+set -euo pipefail
+
+dnf update -y
+dnf install -y docker git curl awscli-2
+systemctl enable --now docker
+install -d -m 0755 /usr/local/lib/docker/cli-plugins
+curl -fsSL https://github.com/docker/compose/releases/download/v2.39.2/docker-compose-linux-x86_64 \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+chmod 0755 /usr/local/lib/docker/cli-plugins/docker-compose
+
+git clone --depth 1 --branch main ${repo_url} /opt/codesentinel
+for attempt in $(seq 1 30); do
+  if aws ssm get-parameter --region ${aws_region} --name ${app_env_parameter_name} --with-decryption --query Parameter.Value --output text > /opt/codesentinel/.env; then
+    break
+  fi
+  sleep 10
+done
+test -s /opt/codesentinel/.env
+chmod 0600 /opt/codesentinel/.env
+cat > /opt/codesentinel/.aws-runtime <<'EOF'
+AWS_REGION=${aws_region}
+ECR_REGISTRY=${ecr_registry}
+EOF
+chmod 0600 /opt/codesentinel/.aws-runtime
+cat > /usr/local/bin/codesentinel-deploy <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+exec /opt/codesentinel/deploy/aws/deploy.sh "$@"
+EOF
+chmod 0755 /usr/local/bin/codesentinel-deploy

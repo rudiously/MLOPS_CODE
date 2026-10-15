@@ -1,0 +1,30 @@
+model:
+  base_model: demo-random-roberta
+  max_seq_length: 32
+  num_cwe_classes: 3
+  severity_levels: [low, medium, high, critical]
+  dropout: 0.1
+data:
+  processed_dir: D:/Third_Year/MLOPS/code_sentinal/codesentinel-model/.demo_build/processed
+  augment_train: true
+  augment_frac: 0.2
+training:
+  epochs: 1
+  batch_size: 4
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.06
+  seed: 0
+  k_folds: 2
+  loss: {type: focal, focal_gamma: 2.0}
+  early_stopping_patience: 1
+  gradient_accumulation_steps: 1
+  fp16: false
+calibration: {method: temperature_scaling, fit_on: val}
+mlflow:
+  tracking_uri: D:/Third_Year/MLOPS/code_sentinal/codesentinel-model/.demo_build/mlruns
+  experiment_name: demo-synthetic
+  registered_model_name: demo-synthetic
+output:
+  checkpoint_dir: D:/Third_Year/MLOPS/code_sentinal/codesentinel-model/.demo_build/checkpoints
+  final_model_dir: D:/Third_Year/MLOPS/code_sentinal/codesentinel-model/.demo_build/final_model

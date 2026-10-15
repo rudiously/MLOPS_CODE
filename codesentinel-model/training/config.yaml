@@ -1,0 +1,47 @@
+# CodeSentinel model core — training config
+# Override any field from the CLI, e.g.:
+#   python training/train.py model.base_model=microsoft/codebert-base training.epochs=5
+
+model:
+  base_model: microsoft/graphcodebert-base   # fallback: microsoft/codebert-base, distilroberta-base
+  max_seq_length: 512
+  num_cwe_classes: 20          # top-K most frequent CWEs in training data; rest bucketed as "other"
+  severity_levels: [low, medium, high, critical]
+  dropout: 0.1
+
+data:
+  processed_dir: data/processed
+  augment_train: true
+  augment_frac: 0.2            # fraction of training batches replaced with augmented copies
+
+training:
+  epochs: 6
+  batch_size: 16
+  learning_rate: 2.0e-5   # PyYAML's safe loader only parses exponential notation
+                          # as a float when the mantissa has a decimal point —
+                          # "2e-5" (no dot) is silently read back as the *string*
+                          # "2e-5", which crashes torch.optim.AdamW's lr check
+                          # far away from here. Always write these as "2.0e-5".
+  weight_decay: 0.01
+  warmup_ratio: 0.06
+  seed: 42
+  k_folds: 5                   # used for hyperparameter selection only; final fit uses train+val
+  loss:
+    type: focal                # "focal" or "class_weighted"
+    focal_gamma: 2.0
+  early_stopping_patience: 2
+  gradient_accumulation_steps: 2
+  fp16: true
+
+calibration:
+  method: temperature_scaling
+  fit_on: val
+
+mlflow:
+  tracking_uri: mlflow/mlruns
+  experiment_name: codesentinel-vuln-classifier
+  registered_model_name: codesentinel-vuln-classifier
+
+output:
+  checkpoint_dir: training/checkpoints
+  final_model_dir: training/final_model

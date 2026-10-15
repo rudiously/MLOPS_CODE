@@ -1,0 +1,36 @@
+name: CodeSentinel Model CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8
+
+      - name: Lint
+        run: |
+          flake8 data training explainability export evaluation codesentinel_model \
+            --max-line-length=110 --extend-ignore=E203,W503 --exit-zero
+
+      - name: Run smoke pipeline test (no GPU / no HF hub access required)
+        run: pytest tests/test_smoke_pipeline.py -v
+
+      - name: Run unit tests
+        run: pytest tests/ -v --ignore=tests/test_smoke_pipeline.py
